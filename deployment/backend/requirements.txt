@@ -1,0 +1,6 @@
+flask
+flask-cors
+pymongo
+boto3
+tensorflow
+Pillow

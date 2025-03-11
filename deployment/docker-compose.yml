@@ -6,11 +6,31 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
+    networks:
+      - internal_network
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
 
-volumes:
-  mongodb_data:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask_backend
+    ports:
+      - "5000:5000"
+    environment:
+      MONGO_URI: mongodb://root:password@mongodb:27017/alzheimer_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - internal_network
+    volumes:
+      - ./backend:/app  # <-- Monta el código local directamente en el contenedor
+      - /app/__pycache__/
+      - ./CNN_Categorical_Crossentropy.h5:/app/CNN_Categorical_Crossentropy.h5
+
+
+networks:
+  internal_network:
+    driver: bridge
